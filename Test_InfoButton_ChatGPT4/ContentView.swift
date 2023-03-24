@@ -7,15 +7,58 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ListItem: Identifiable {
+    let id = UUID()
+    let title: String
+}
+
+struct CustomRowView: View {
+    let item: ListItem
+    var onInfoButtonTap: (() -> Void)?
+    var onRowTap: (() -> Void)?
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        HStack {
+            Text(item.title)
+                .font(.headline)
+            
+            Spacer()
+            
+            Button(action: {
+                onInfoButtonTap?()
+            }) {
+                Image(systemName: "info.circle")
+                    .foregroundColor(.blue)
+            }
+            .buttonStyle(BorderlessButtonStyle())
         }
-        .padding()
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onRowTap?()
+        }
+    }
+}
+
+
+
+struct ContentView: View {
+    let items: [ListItem] = [
+        ListItem(title: "Item 1"),
+        ListItem(title: "Item 2"),
+        ListItem(title: "Item 3")
+    ]
+
+    var body: some View {
+        NavigationView {
+            List(items) { item in
+                CustomRowView(item: item, onInfoButtonTap: {                    
+                    print("Info button tapped for \(item.title)")
+                }, onRowTap: {
+                    print("Row tapped for \(item.title)")
+                })
+            }
+            .navigationBarTitle("List with Info Buttons")
+        }
     }
 }
 
@@ -24,3 +67,4 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
